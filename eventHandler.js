@@ -13,7 +13,7 @@ String.prototype.contains = function(small, callback) {
 	if (big !== big.split(small).join("")) callback();
 }
 
-chrome.webNavigation.onCommitted.addListener(function(details) {
+chrome.webNavigation.onCompleted.addListener(function(details) {
 	// We just navigated to a new page, get the url
 	var url = details.url;
 	
@@ -48,12 +48,11 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			
 	if (request.forumlink) {
 		console.log(request.forumlink);
-	
-		// Create a new Chrome tab with the requsted URL
-		chrome.tabs.create({'url': request.forumlink, 'active': false }, function(tab) {
+		// holy hacks batman
+		chrome.windows.create({'url': request.forumlink, 'focused': false, 'height': 1, 'width': 1, 'top': -1, 'left': -1}, function(window) {
 			// Okay now with this tab we have to inject our Javascript
-			chrome.tabs.executeScript(tab.id, {'file': 'jquery.min.js'});
-			chrome.tabs.executeScript(tab.id, {'file': 'ripComments.js'});
+			chrome.tabs.executeScript(window.tabs[0].id, {'file': 'jquery.min.js'});
+			chrome.tabs.executeScript(window.tabs[0].id, {'file': 'ripComments.js'});
 		});
 	} else if (request.html) {
 		console.log("Got the HTML!");
@@ -62,9 +61,9 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			newdiv.innerHTML = request.html;
 			document.getElementById("watch7-content").appendChild(newdiv);
 		*/
-		var trimmedHTML = request.html.trim().split("\n").join(" ").replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+		var trimmedHTML = request.html.trim().split('"/').join('"https://forum.teksyndicate.com/').split("https://forum.teksyndicate.com//forum.teksyndicate.com/").join("https://forum.teksyndicate.com/").split("\n").join(" ").replace(/(['"])/g, "\\$1");
 		
-		chrome.tabs.executeScript(yttabid, {'code' : 'newdiv = document.createElement("div"); newdiv.innerHTML = "' + trimmedHTML + '"; document.getElementById("watch7-content").appendChild(newdiv);'});
+		chrome.tabs.executeScript(yttabid, {'code' : 'newdiv = document.createElement("div"); newdiv.innerHTML = "' + trimmedHTML + '"; document.getElementById("watch7-content").appendChild(newdiv);body.style.background = "#1a1a1a"'});
 	}
 	
 	
