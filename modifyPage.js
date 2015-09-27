@@ -8,8 +8,6 @@ $(document).ready(function() {
 	var href = $(".yt-user-info > a.yt-uix-sessionlink.g-hovercard.spf-link")[0].href;
 	var id = href.split("/channel/")[href.split("/channel/").length - 1];
 
-	console.log(id); //temp
-
 	for (var i = 0; i < channels.length; i++) {
 		if (channels[i] == id) loadForum();
 	}

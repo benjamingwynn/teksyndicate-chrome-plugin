@@ -17,16 +17,9 @@ chrome.webNavigation.onCompleted.addListener(function(details) {
 	// We just navigated to a new page, get the url
 	var url = details.url;
 	
-	//console.log(url);
-	
 	// Check to see if this is a Youtube watch page:
 	url.contains("youtube.com/watch?v=", function() {
-		// temp
-		console.info("Got YouTube page, injecting JS.");
 		yttabid = details.tabId;
-		
-		// temp
-		//console.log(details);
 		
 		// Inject JS into this page:
 		chrome.tabs.executeScript(details.tabId, {file: "jquery.min.js"});
@@ -38,10 +31,6 @@ chrome.webNavigation.onCompleted.addListener(function(details) {
 
 chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
 	sendResponse();
-	//console.log("GOT!");
-	
-	// parse
-	//var request = JSON.parse(unparsedrequest);
 	
 	console.log(request);
 	console.log(yttabid);
@@ -56,17 +45,15 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 		});
 	} else if (request.html) {
 		console.log("Got the HTML!");
+		
+		// Parse the HTML
+		var trimmedHTML = request.html.trim().split('"/').join('"https://forum.teksyndicate.com/').split("https://forum.teksyndicate.com//forum.teksyndicate.com/").join("https://forum.teksyndicate.com/").split("\n").join(" ").replace(/(['"])/g, "\\$1");
+		
 		/*
 			newdiv = document.createElement('div');
 			newdiv.innerHTML = request.html;
 			document.getElementById("watch7-content").appendChild(newdiv);
 		*/
-		var trimmedHTML = request.html.trim().split('"/').join('"https://forum.teksyndicate.com/').split("https://forum.teksyndicate.com//forum.teksyndicate.com/").join("https://forum.teksyndicate.com/").split("\n").join(" ").replace(/(['"])/g, "\\$1");
-		
 		chrome.tabs.executeScript(yttabid, {'code' : 'newdiv = document.createElement("div"); newdiv.innerHTML = "' + trimmedHTML + '"; document.getElementById("watch7-content").appendChild(newdiv);body.style.background = "#1a1a1a"'});
 	}
-	
-	
-	//console.log(sender);
-	//console.log(sendResponse);
 });
