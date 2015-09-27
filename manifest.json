@@ -1,6 +1,5 @@
 {
 	"manifest_version": 2,
-
 	"name": "Unofficial Tek Syndicate Plugin",
 	"description": "This plugin displays the forum post related to the video on Tek Syndicate videos, rather than the usual Youtube comments. This is not an official plugin.",
 	"version": "1.0",
@@ -11,14 +10,22 @@
 	},
 	
 	"permissions": [
+		"tabs",
 		"activeTab",
-		"https://ajax.googleapis.com/",
 		"webNavigation",
-		"https://www.youtube.com/"
+		"https://ajax.googleapis.com/",
+		"https://www.youtube.com/",
+		"https://forum.teksyndicate.com/",
+		"https://teksyndicate.com/",
+		"https://www.teksyndicate.com/"
 	],
 	
 	"background": {
 		"scripts": ["eventHandler.js"],
 		"persistent": false
-	}
+	},
+	
+    "externally_connectable": {
+        "matches": ["*://www.youtube.com/*", "*://youtube.com/*", "*://teksyndicate.com/*"]
+    }
 }
