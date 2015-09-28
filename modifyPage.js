@@ -1,6 +1,10 @@
 // Here are the Tek Syndicate channel ID's:
 var channels = [
-	"UCNovoA9w0KnxyDP5bGrOYzg"
+	"UCNovoA9w0KnxyDP5bGrOYzg", // Tek Syndicate
+	"UC4w1YQAJMWOz4qtxinq55LQ", // Tek Syndicate Hardware
+	"UCOWcZ6Wicl-1N34H0zZe38w", // Tek Linux
+	"UCd6EFsVsqGhASiz6g1KifUQ", // Tek Enterprise
+	"UCoeAaUE-_t89BHuXjnfwykw"  // Beer Games Beer
 ];
 
 $(document).ready(function() {
