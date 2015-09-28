@@ -1,5 +1,5 @@
-// Here are the Tek Syndicate channel ID's:
-var channels = [
+// Tek Syndicate channel ID's
+const CHANNELS = [
 	"UCNovoA9w0KnxyDP5bGrOYzg", // Tek Syndicate
 	"UC4w1YQAJMWOz4qtxinq55LQ", // Tek Syndicate Hardware
 	"UCOWcZ6Wicl-1N34H0zZe38w", // Tek Linux
@@ -7,21 +7,36 @@ var channels = [
 	"UCoeAaUE-_t89BHuXjnfwykw"  // Beer Games Beer
 ];
 
-$(document).ready(function() {
-	// Get the ID of this Youtuber
-	var href = $(".yt-user-info > a.yt-uix-sessionlink.g-hovercard.spf-link")[0].href;
-	var id = href.split("/channel/")[href.split("/channel/").length - 1];
+console.log("Injected Tek Syndicate Extension JS");
 
-	for (var i = 0; i < channels.length; i++) {
-		if (channels[i] == id) loadForum();
+// Use ontransitionend to detect when the page is changed
+
+var lastpath = "";
+window.ontransitionend = function(e) {
+	if (window.location.pathname != lastpath) {
+		lastpath = window.location.pathname;
+		console.log("Youtube page changed!");
+		
+		// Is this a video page?
+		if (window.location.pathname == "/watch") {
+			console.log("Looks like we're on a video page!");
+			
+			// Is this a Tek Syndicate page?
+			var href = $(".yt-user-info > a.yt-uix-sessionlink.g-hovercard.spf-link")[0].href;
+			var id = href.split("/channel/")[href.split("/channel/").length - 1];
+
+			for (var i = 0; i < CHANNELS.length; i++) {
+				if (CHANNELS[i] == id) loadForum();
+			}
+		}
 	}
-});
+}
 
 function loadForum() {
 	// Who doen't love ASCII art?
 	razeTheWorld();
 
-	// 1. Remove the shitty YouTube comments, nobody likes them anyway
+	// TODO: Only remove Youtube comments once we know everything else loaded okay
 	$("#watch-discussion").remove();
 	
 	// Loop through all links in the watch description
@@ -31,9 +46,6 @@ function loadForum() {
 		if (splitted != this.href) {
 			// Okay, now we have the Tek Syndicate link, we have to find the forum link
 			console.log(this.href);
-			
-			// https://forum.teksyndicate.com/embed/comments?embed_url=https%3A%2F%2Fteksyndicate.com%2Fvideos%2Ftek-0196-will-human-intelligence-keep-ai
-			//var forum = 'https://forum.teksyndicate.com/embed/comments?embed_url=' + this.href;
 			
 			// Tell our extension the link we found. For this to identify as coming from Youtube, we have to inject it into the HTML
 			$("body").append('<script>chrome.runtime.sendMessage("khpnodaokejfagbkihjjlanlbicpgpll", {"forumlink":"' + this.href + '"})</script>');

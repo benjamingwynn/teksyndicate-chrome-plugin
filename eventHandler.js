@@ -1,6 +1,4 @@
-// https://developer.chrome.com/extensions/webNavigation#event-onDOMContentLoaded
-
-var yttabid = 0;
+var lastyttab = 0;
 
 // .contains
 String.prototype.contains = function(small, callback) {
@@ -13,19 +11,21 @@ String.prototype.contains = function(small, callback) {
 	if (big !== big.split(small).join("")) callback();
 }
 
-chrome.webNavigation.onCompleted.addListener(function(details) {
+chrome.webNavigation.onCommitted.addListener(function(details) {
 	// We just navigated to a new page, get the url
 	var url = details.url;
 	
 	// Check to see if this is a Youtube watch page:
-	url.contains("youtube.com/watch?v=", function() {
-		yttabid = details.tabId;
+	url.contains("youtube.com", function() {
+		//console.log("New Youtube tab opened: " + details.tabId)
+		//youtubeTabs[youtubeTabs.length] = details.tabId;
 		
-		// Inject JS into this page:
-		chrome.tabs.executeScript(details.tabId, {file: "jquery.min.js"});
-		chrome.tabs.executeScript(details.tabId, {file: "razeTheWorld.js"});
-		chrome.tabs.executeScript(details.tabId, {file: "modifyPage.js"});
-		//chrome.tabs.executeScript(details.tabId, {file: "prototypeExtensions.js"});
+		lastyttab = details.tabId;
+		
+		//console.log("Executing Javascript for Youtube...");
+		chrome.tabs.executeScript(details.tabId, {file: "injector.js"});
+		chrome.tabs.executeScript(details.tabId, {code: "injectScript('jquery.min', function() {injectScript('youtubeWatcher')})"});
+		chrome.tabs.executeScript(details.tabId, {code: "injectScript('razeTheWorld')"});
 	});
 });
 
@@ -33,11 +33,11 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 	sendResponse();
 	
 	console.log(request);
-	console.log(yttabid);
-			
+	
 	if (request.forumlink) {
 		console.log(request.forumlink);
 		// holy hacks batman
+		
 		chrome.windows.create({'url': request.forumlink, 'focused': false, 'height': 1, 'width': 1, 'top': -1, 'left': -1}, function(window) {
 			// Okay now with this tab we have to inject our Javascript
 			chrome.tabs.executeScript(window.tabs[0].id, {'file': 'jquery.min.js'});
@@ -54,6 +54,9 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			newdiv.innerHTML = request.html;
 			document.getElementById("watch7-content").appendChild(newdiv);
 		*/
-		chrome.tabs.executeScript(yttabid, {'code' : 'newdiv = document.createElement("div"); newdiv.innerHTML = "' + trimmedHTML + '"; document.getElementById("watch7-content").appendChild(newdiv);body.style.background = "#1a1a1a"'});
+		
+		console.log(lastyttab);
+		
+		chrome.tabs.executeScript(lastyttab, {'code' : 'newdiv = document.createElement("div"); newdiv.innerHTML = "' + trimmedHTML + '"; document.getElementById("watch7-content").appendChild(newdiv);body.style.background = "#1a1a1a"'});
 	}
 });
