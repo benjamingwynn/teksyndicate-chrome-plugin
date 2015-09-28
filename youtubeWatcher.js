@@ -12,25 +12,40 @@ console.log("Injected Tek Syndicate Extension JS");
 // Use ontransitionend to detect when the page is changed
 
 var lastpath = "";
+
 window.ontransitionend = function(e) {
-	if (window.location.pathname != lastpath) {
+	// Last path test
+	if (lastpath == "") {
+		console.warn("No last path. This means we navigated here directly or we were just reloaded by ourselves.");
 		lastpath = window.location.pathname;
-		console.log("Youtube page changed!");
+	} else if (window.location.pathname != lastpath) {
+		// Fix background colour
+		body.style.background = "#F1F1F1";
+		
+		lastpath = window.location.pathname;
+		console.info("Youtube page changed!");
 		
 		// Is this a video page?
 		if (window.location.pathname == "/watch") {
-			console.log("Looks like we're on a video page!");
-			
-			// Is this a Tek Syndicate page?
-			var href = $(".yt-user-info > a.yt-uix-sessionlink.g-hovercard.spf-link")[0].href;
-			var id = href.split("/channel/")[href.split("/channel/").length - 1];
-
-			for (var i = 0; i < CHANNELS.length; i++) {
-				if (CHANNELS[i] == id) loadForum();
-			}
+			console.log("Looks like we're on a video page! Force reloading to rebuild page elements correctly");
+			location.reload();
 		}
 	}
 }
+
+$(document).ready(function() {
+	if (window.location.pathname == "/watch") {
+		console.info("We just navigated to a Youtube watch page!");
+		
+		// Is this a Tek Syndicate page?
+		var href = $(".yt-user-info > a.yt-uix-sessionlink.g-hovercard.spf-link")[0].href;
+		var id = href.split("/channel/")[href.split("/channel/").length - 1];
+
+		for (var i = 0; i < CHANNELS.length; i++) {
+			if (CHANNELS[i] == id) loadForum();
+		}
+	}
+});
 
 function loadForum() {
 	// Who doen't love ASCII art?

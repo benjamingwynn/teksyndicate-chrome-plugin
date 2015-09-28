@@ -15,17 +15,16 @@ chrome.webNavigation.onCommitted.addListener(function(details) {
 	// We just navigated to a new page, get the url
 	var url = details.url;
 	
-	// Check to see if this is a Youtube watch page:
+	// Check to see if this is a Youtube page:
 	url.contains("youtube.com", function() {
-		//console.log("New Youtube tab opened: " + details.tabId)
-		//youtubeTabs[youtubeTabs.length] = details.tabId;
-		
-		lastyttab = details.tabId;
-		
-		//console.log("Executing Javascript for Youtube...");
 		chrome.tabs.executeScript(details.tabId, {file: "injector.js"});
 		chrome.tabs.executeScript(details.tabId, {code: "injectScript('jquery.min', function() {injectScript('youtubeWatcher')})"});
 		chrome.tabs.executeScript(details.tabId, {code: "injectScript('razeTheWorld')"});
+	});
+	
+	url.contains("youtube.com/watch", function() {
+		console.log("New Youtube watch tab opened: " + details.tabId);
+		lastyttab = details.tabId;
 	});
 });
 
@@ -47,7 +46,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 		console.log("Got the HTML!");
 		
 		// Parse the HTML
-		var trimmedHTML = request.html.trim().split('"/').join('"https://forum.teksyndicate.com/').split("https://forum.teksyndicate.com//forum.teksyndicate.com/").join("https://forum.teksyndicate.com/").split("\n").join(" ").replace(/(['"])/g, "\\$1");
+		var parsedHTML = request.html.trim().split('"/').join('"https://forum.teksyndicate.com/').split("https://forum.teksyndicate.com//forum.teksyndicate.com/").join("https://forum.teksyndicate.com/").split("\n").join(" ").replace(/(['"])/g, "\\$1");
 		
 		/*
 			newdiv = document.createElement('div');
@@ -57,6 +56,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 		
 		console.log(lastyttab);
 		
-		chrome.tabs.executeScript(lastyttab, {'code' : 'newdiv = document.createElement("div"); newdiv.innerHTML = "' + trimmedHTML + '"; document.getElementById("watch7-content").appendChild(newdiv);body.style.background = "#1a1a1a"'});
+		chrome.tabs.executeScript(lastyttab, {'code' : 'newdiv = document.createElement("div"); newdiv.id="tek-syndicate-comments"; newdiv.innerHTML = "' + parsedHTML + '"; document.getElementById("watch7-content").appendChild(newdiv); body.style.background = "#1a1a1a"; console.log("comments injected!")'});
 	}
 });
