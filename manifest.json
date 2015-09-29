@@ -14,11 +14,8 @@
 		"activeTab",
 		"webNavigation",
 		"windows",
-		"https://ajax.googleapis.com/",
 		"https://www.youtube.com/",
-		"https://forum.teksyndicate.com/",
-		"https://teksyndicate.com/",
-		"https://www.teksyndicate.com/"
+		"https://teksyndicate.com/"
 	],
 
 	"background": {
